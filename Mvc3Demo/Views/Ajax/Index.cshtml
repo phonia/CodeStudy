@@ -1,0 +1,49 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Head {
+    <script type="text/javascript">
+        function SaveProduct() {
+            var f = $('#fbi');
+            f.form('submit', {
+                url: '/Login/Login',
+                success: function (result) {
+                }
+            });
+        }
+
+        function clearForm() {
+            var f = $('#fbi');
+            f.form('clear');
+        }
+    </script>
+    }
+
+<div style="display:block;width:400px;margin:0 auto;text-align:left;margin-top:200px;">
+    <div class="easyui-panel" title="登录界面" style="width:400px">
+        <div style="padding:10px 60px 20px 60px">
+            <form id="fbi" action="Login/Login" method="post">
+                <div class="fitem">
+                    <label id="lable"></label>
+                    <label>用户名:</label>
+                    <input id="UserName" name="UserName" class="easyui-validatebox" required="required" value="admin" />
+                    <div style="height:20px">
+                    </div>
+                    <div class="fitem">
+                        <label>密&nbsp;&nbsp;码:</label>
+                        <input id="UserPwd" name="UserPwd" class="easyui-validatebox" required="required" type="password" value="123" />
+                    </div>
+                    <div style="height:20px"></div>
+                    <div style="text-align:center;padding:5px">
+@*                        <input class="easyui-linkbutton" type="submit" value="登录" />
+                        <input class="easyui-linkbutton" type="submit" value="清除" onclick="clearForm()" />*@
+                        <a href="javascript:" class="easyui-linkbutton"  onclick="SaveProduct()">登录</a>
+                        <a href="javascript:" class="easyui-linkbutton" onclick="clearForm()">清除</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
