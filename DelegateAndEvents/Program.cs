@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace DelegateAndEvents
 {
+    /***
+     * 委托链的问题
+     * ***/
     class Program
     {
         static void Main(string[] args)

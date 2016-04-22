@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<activityRootModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm4="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" xmlns:dm9="http://schemas.microsoft.com/dsltools/SimpleShapesModel" dslVersion="1.0.0.0" Id="9f81784c-87c2-4dce-beb9-cdf38409e470" name="信仁医院住出院流程" linkedPackageId="52067776-dcd8-4020-bf3e-295d4fd83378" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/ActivityDesigner">
+  <profileInstances>
+    <packageHasProfileInstances Id="740920ca-3f23-4d74-9f63-08995dd06b0e">
+      <profileInstance Id="1b971600-20c7-4d48-8d50-5061222bba66" name="StandardProfileL2">
+        <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+      </profileInstance>
+      <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+    </packageHasProfileInstances>
+    <packageHasProfileInstances Id="5c0c1320-250a-42b3-8ea0-05fde283e1fe">
+      <profileInstance Id="86b157b4-81df-49d7-8418-6036462bf7ff" name="StandardProfileL3">
+        <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+      </profileInstance>
+      <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+    </packageHasProfileInstances>
+  </profileInstances>
+  <packagedElements>
+    <activityRootModelHasActivity>
+      <activity Id="98546ebf-c699-48b0-8e8c-5c5ffca50297" name="信仁医院住出院流程" isAbstract="false" isLeaf="false" isActiveClass="false" isReentrant="false" isReadOnly="false" isSingleExecution="false">
+        <elementDefinition Id="78a61ea7-5cc8-476d-aa52-a4de07aed98d" />
+      </activity>
+    </activityRootModelHasActivity>
+  </packagedElements>
+  <package Id="52067776-dcd8-4020-bf3e-295d4fd83378" name="UMLStudy">
+    <elementDefinition Id="139bbf74-0958-4524-bb31-83adb0a6ee9e" />
+  </package>
+</activityRootModel>
