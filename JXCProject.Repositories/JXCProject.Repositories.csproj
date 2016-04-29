@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0BAFCD33-4173-46D3-900F-575FD11D8F04}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>JXCProject.Repositories</RootNamespace>
+    <AssemblyName>JXCProject.Repositories</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework">
+      <HintPath>..\..\..\..\..\Computer Language\EntityFramework-上传版\1 概述\SourceCode\CodeFirstTest\packages\EntityFramework.5.0.0\lib\net40\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CreateDatabaseFromModels.cs" />
+    <Compile Include="IQueryableUnitOfWork.cs" />
+    <Compile Include="Repositories\CustomerAddressRepository.cs" />
+    <Compile Include="Repositories\CustomerRepository.cs" />
+    <Compile Include="Repositories\DepartmentRepository.cs" />
+    <Compile Include="Repositories\EmployeeRepository.cs" />
+    <Compile Include="Repositories\InStoreDetailRepository.cs" />
+    <Compile Include="Repositories\InStoreRepository.cs" />
+    <Compile Include="Repositories\PositionStockRepository.cs" />
+    <Compile Include="Repositories\ProductCategoryRepository.cs" />
+    <Compile Include="Repositories\ProductRepository.cs" />
+    <Compile Include="Repositories\PurchaseOpDetailRepository.cs" />
+    <Compile Include="Repositories\PurchaseOpRepository.cs" />
+    <Compile Include="Repositories\SaleOrderDetailRepository.cs" />
+    <Compile Include="Repositories\SaleOrderRepository.cs" />
+    <Compile Include="Repositories\SaleOutDetailRepository.cs" />
+    <Compile Include="Repositories\SaleOutRepository.cs" />
+    <Compile Include="Repositories\WareHouseRepository.cs" />
+    <Compile Include="Repositories\WarePositionRepository.cs" />
+    <Compile Include="JXCContext.cs" />
+    <Compile Include="ModelConfigurations\CustomerAddressConfiguration.cs" />
+    <Compile Include="ModelConfigurations\CustomerConfiguration.cs" />
+    <Compile Include="ModelConfigurations\DepartmentConfiguration.cs" />
+    <Compile Include="ModelConfigurations\EmployeeConfiguration.cs" />
+    <Compile Include="ModelConfigurations\InStoreConfiguration.cs" />
+    <Compile Include="ModelConfigurations\InStoreDetailConfiguration.cs" />
+    <Compile Include="ModelConfigurations\PositionStockConfiguration.cs" />
+    <Compile Include="ModelConfigurations\ProductCategoryConfiguration.cs" />
+    <Compile Include="ModelConfigurations\ProductConfiguration.cs" />
+    <Compile Include="ModelConfigurations\PurchaseOpConfiguration.cs" />
+    <Compile Include="ModelConfigurations\PurchaseOpDetailConfiguration.cs" />
+    <Compile Include="ModelConfigurations\SaleOrderConfiguration.cs" />
+    <Compile Include="ModelConfigurations\SaleOrderDetailConfiguration.cs" />
+    <Compile Include="ModelConfigurations\SaleOutConfiguration.cs" />
+    <Compile Include="ModelConfigurations\SaleOutDetailConfiguration.cs" />
+    <Compile Include="ModelConfigurations\WareHouseConfiguration.cs" />
+    <Compile Include="ModelConfigurations\WarePositionConfiguration.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\JXCProject.Domain\JXCProject.Domain.csproj">
+      <Project>{0674CCE5-5B4D-45EC-BCCE-984E090B10B3}</Project>
+      <Name>JXCProject.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\JXCProject.Infrastructure\JXCProject.Infrastructure.csproj">
+      <Project>{FCEBE0BC-6A2A-445E-BA3D-F70CDA9D0288}</Project>
+      <Name>JXCProject.Infrastructure</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

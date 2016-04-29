@@ -1,0 +1,176 @@
+﻿@model JXCProject.Services.DTOs.PurchaseOpDTO
+
+@{
+    ViewBag.Title = "采购单申请";
+}
+
+<script type="text/javascript">
+    $(function () {
+        //初始化品种列表
+        $('#productList').combobox({
+            valueField: 'ID',
+            textField: 'Name'
+        });
+
+        $('#appQty').numberbox({ min: 1 });
+        $('#stkPrice').numberbox({ min: 0, precision: 2 });
+        $('#Amount').numberbox({ disabled: true });
+
+        $('#Date').datebox({
+            formatter: common.getDate
+        });
+        $('#Date').datebox('setValue', common.getDate(new Date()));
+
+        loadCustomer();
+        loadProudct();
+
+        //单击生成采购明细表格
+        $('#btnCreatePurchaseDetailGrid').click(function () {
+            var row = {};
+            row.CustomerName = $('#cstList').combobox('getText');
+            row.ProductId = $('#productList').combobox('getValue');
+            row.ProductName = $('#productList').combobox('getText');
+            row.AppQty = $('#appQty').val();
+            row.StkPrice = $('#stkPrice').val();
+
+            createPurchaseDetailGrid();
+            $('#purchaseDetailGrid').datagrid('loaded'); //隐藏数据正在加载......层
+            $('#purchaseDetailGrid').datagrid('appendRow', row);
+
+            //计算采购总金额
+            var sumAmount = parseFloat($('#Amount').val() == '' ? 0 : $('#Amount').val());
+            sumAmount += row.AppQty * row.StkPrice;
+            $('#Amount').val(parseFloat(sumAmount).toFixed(2));
+        })
+    });
+
+    //添加采购单
+    function purchaseApply() {
+        $('#btnSubmit').linkbutton('disable');
+
+        var purchase = {};
+        purchase.CustomerId = $('#cstList').combobox('getValue');
+        purchase.Date = $('#Date').datebox('getValue');
+        purchase.Memo = $('#Memo').val();
+
+        var purchaseDetail = $('#purchaseDetailGrid').datagrid('getData').rows
+        for (var i = 0; i < purchaseDetail.length; i++) {
+            purchase['PurchaseOpDetails[' + i + '].ProductId'] = purchaseDetail[i].ProductId;
+            purchase['PurchaseOpDetails[' + i + '].AppQty'] = purchaseDetail[i].AppQty;
+            purchase['PurchaseOpDetails[' + i + '].StkPrice'] = purchaseDetail[i].StkPrice;
+        }
+
+        $.ajax({
+            url: '@Url.Action("PurchaseApply")',
+            type: 'POST',
+            data: purchase,
+            success: function () {
+                $('#btnSubmit').linkbutton('enable');
+                onSuccess();
+            }
+        })
+    }
+
+    //加载客户数据
+    function loadCustomer() {
+        var cstName = tbCstName.value;
+        $('#cstList').combobox({
+            valueField: 'ID',
+            textField: 'Name',
+            url: '/Purchase/GetCustomerByName?cstName=' + encodeURI(cstName) + ''
+        });
+    }
+
+    //加载品种分类和品种数据
+    function loadProudct() {
+        $('#categoryTree').combotree({
+            url: '@Url.Action("CreateCategoryTree","ProductCategory")',
+            onSelect: function (record) {
+                //加载品种列表数据
+                $('#productList').combobox('setValue', '--请选择--');
+                $('#productList').combobox('reload', '/Product/LoadProducts?categoryId=' + record.id + '');
+            }
+        });
+    }
+    //根据品种分类搜索品种数据
+    function searchProduct() {
+        var categoryId = $('#categoryTree').combotree('getValue');
+        var productName = $('#btnProductName').val();
+        $('#productList').combobox('reload', '/Purchase/GetProudct?categoryId=' + categoryId + '&name=' + encodeURI(productName) + '');
+    }
+
+    //创建采购明细表格
+    function createPurchaseDetailGrid() {
+        $('#purchaseDetailGrid').datagrid({
+            width: 750,
+            columns: [[
+             { field: 'CustomerName', width: 150, title: '采购客户' },
+             { field: 'ProductName', width: 150, title: '采购品种' },
+             { field: 'AppQty', width: 100, title: '采购数量' },
+             { field: 'StkPrice', width: 100, title: '采购价格' },
+             { field: 'opt', width: 50, title: '删除', formatter: function (value, row, index) {
+                 var r = '<a href="#" onclick="deleteRow(this)">删除</a>';
+                 return r;
+             }
+             }
+            ]]
+        })
+    }
+
+    function deleteRow(target) {
+        var rowIndex = getRowIndex(target);
+        var targetRow = $('#purchaseDetailGrid').datagrid('getRows')[rowIndex];
+        var amount = parseFloat($('#Amount').val());
+        amount -= targetRow.AppQty * targetRow.StkPrice;
+        $('#Amount').val(parseFloat(amount).toFixed(2));
+
+        $('#purchaseDetailGrid').datagrid('deleteRow', rowIndex);
+    }
+     
+     function getRowIndex(target) {
+         var tr = $(target).closest('tr.datagrid-row');
+         return parseInt(tr.attr('datagrid-row-index'));
+     }
+
+     function onSuccess() {
+         $.messager.alert("消息", "操作成功!");
+     }
+</script>
+
+<table width="100%">
+    <tr><td colspan="4" align="center" style="font-size:large;">采购单申请</td></tr>
+    <tr>
+        <td>采购客户:</td>
+        <td>
+        <table>
+            <tr>
+            <td>客户名称:</td><td><input id="cstList" value="--请选择--"  style="width:160px;" /></td>
+            <td>客户名称或简码:</td><td>@Html.TextBox("tbCstName")</td><td><a href="#" id="btnSearchCst" class="easyui-linkbutton" iconCls="icon-search" onclick="loadCustomer();">搜索</a></td>
+            </tr>
+        </table>
+        </td>
+    </tr>
+    <tr>
+        <td>采购品种:</td>
+        <td>
+            <table>
+                <tr><td>品种分类:</td><td><input id="categoryTree" value="--请选择--"  style="width:160px;" /></td></tr>
+                <tr>
+                    <td>品种名称:</td><td><input id="productList" value="--请选择--"  style="width:160px;" /></td>
+                    <td>品种名称或简码:</td><td>@Html.TextBox("btnProductName")</td>
+                    <td><a href="#" id="btnSearchProduct" class="easyui-linkbutton" iconCls="icon-search" onclick="searchProduct();">搜索</a></td>
+                </tr>
+                <tr><td>采购数量:</td><td>@Html.TextBox("appQty")</td><td>采购价格:</td><td>@Html.TextBox("stkPrice")</td></tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="4" align="center"><a href="#" id="btnCreatePurchaseDetailGrid" class="easyui-linkbutton" iconCls="icon-add">添加</a></td>
+    </tr>
+    <tr>
+        <td align="center" colspan="4"><table id="purchaseDetailGrid"></table></td>
+    </tr>
+    <tr><td>采购总金额:</td><td><input id="Amount" name="Amount" style="color:Red; font-size:large;" /></td><td>采购日期:</td><td>@Html.TextBoxFor(model=>model.Date)</td></tr>
+    <tr><td>备注说明:</td><td>@Html.TextAreaFor(model=>model.Memo)</td></tr>
+    <tr><td colspan="4" align="center"><a id="btnSubmit" href="#" class="easyui-linkbutton" onclick="purchaseApply();">提交</a></td></tr>
+</table>

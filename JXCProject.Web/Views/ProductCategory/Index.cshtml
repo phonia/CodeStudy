@@ -1,0 +1,138 @@
+﻿@model JXCProject.Services.DTOs.ProductCategoryDTO
+
+@{
+    ViewBag.Title = "品种分类管理";
+    }
+
+<script type="text/javascript">
+    $(function () {
+        $('#addCategory').dialog({ closed: true });
+        $('#editCategory').dialog({ closed: true });
+
+        $('#btnSearch').click(function () {
+            $('#categoryGrid').datagrid({
+                title: '品种分类',
+                width: 1000,
+                url: '@Url.Action("GetPageData")',
+                collapsible: true,
+                pagination: true,
+                queryParams: { cName: cName.value },
+                columns: [[
+            { field: 'ck', checkbox: true },
+            { field: 'ID', title: 'ID',hidden:true},
+            { field: 'CategoryName', width: 475, title: '分类名称', sortable: true },
+            { field: 'ParentName', width: 472, title: '父级分类名称', sortable: true }
+            ]],
+                toolbar: [
+            { id: 'btnRemove', text: '删除分类', iconCls: 'icon-remove', handler: function () {
+                deleteCategory();
+            }
+            },
+            { id: 'btnEdit', text: '修改分类', iconCls: 'icon-edit', handler: function () {
+                var row = $('#categoryGrid').datagrid('getSelected');
+                if (row) {
+                    $('#editCategory').dialog('open');
+                    $('#categoryTree1').combotree({
+                        url: '@Url.Action("CreateCategoryTree")'
+                    });
+                    oldCategoryName.value = row.CategoryName;
+                }
+                else {
+                    $.messager.alert('消息', '请选择要编辑的行!', 'warning')
+                }
+            }
+            }
+            ]
+            })
+        })
+    });
+
+    function ShowAddDialog() {
+        $('#addCategory').dialog('open');
+        $('#categoryTree').combotree({
+            url: '@Url.Action("CreateCategoryTree")'
+        });
+    }
+
+    function addCategory() {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("AddProductCategory")',
+            data: { categoryName: categoryName.value, parentID: $('#categoryTree').combotree('getValue') },
+            success: function () {
+                $('#categoryTree').combotree('reload');
+                $.messager.alert("消息", "操作成功!");
+            }
+        });
+    }
+    
+    function deleteCategory() {
+        var rows = $('#categoryGrid').datagrid('getSelections');
+        if (rows.length == 0) {
+            $.messager.alert("消息", "请选择要删除的数据!", 'warning');
+        }
+        else {
+            for (var i = 0; i < rows.length; i++) {
+                var index = $('#categoryGrid').datagrid('getRowIndex', rows[i]);
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("RemoveProductCategory")',
+                    data: { id: rows[i].ID }
+                });
+                $('#categoryGrid').datagrid('deleteRow', index);
+            }
+            $.messager.alert("消息", "已成功删除" + rows.length + "条数据!");
+        }
+    }
+
+    function editCategory() {
+        var row = $('#categoryGrid').datagrid('getSelected');
+        if (row) {
+            var data =
+            {   parentID: $('#categoryTree1').combotree('getValue'),
+                id: row.ID,
+                parentName: $('#categoryTree1').combotree('getText')
+            };
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("ModifyProductCategory")',
+                data: data,
+                success: function () {
+                    $('#editCategory').dialog({ closed: true });
+                    //刷新修改的行
+                    var index = $('#categoryGrid').datagrid('getRowIndex', row);
+                    $('#categoryGrid').datagrid('updateRow', { index: index, row: { ParentID: data.parentID, ParentName: data.parentName} });
+                    $.messager.alert("消息", "操作成功!");
+                }
+            });
+        }
+    }
+    
+    
+    </script>
+<table width="100%">
+    <tr><td colspan="2" align="center" style="font-size:large;">品种分类管理</td></tr>
+    <tr><td>
+    <table><tr>
+    <td>@Html.TextBox("cName")</td>
+    <td><a href="#" id="btnSearch" class="easyui-linkbutton" iconCls="icon-search">查询</a></td>
+    </tr></table>
+    </td><td align="right"><a href="#" id="btnAdd" onclick="ShowAddDialog();" class="easyui-linkbutton">新增品种分类</a></td></tr>
+    <tr><td colspan="2"><table id="categoryGrid"></table></td></tr>
+</table>
+<div id="addCategory" class="tabletd" title="新增分类" style="height:170px;width:270px;">
+    <table  width="100%">
+        <tr><td align="center" colspan="2"></td></tr>
+        <tr><td>分类名称:</td><td>@Html.TextBox("categoryName")</td></tr>
+        <tr><td>父类名称:</td><td><input id="categoryTree" value="--请选择--"  style="width:160px;" /></td></tr>
+        <tr><td colspan="2" align="center"><a id="btnAddCategory" onclick="addCategory();" href="#" class="easyui-linkbutton">提交</a></td></tr>
+    </table>
+</div>
+<div id="editCategory" class="tabletd" title="修改分类" style=" height:170px; width:270px;" >
+    <table width="100%">
+        <tr><td align="center" colspan="2"></td></tr>
+        <tr><td>分类名称:</td><td><input type="text" id="oldCategoryName" disabled="disabled"/></td></tr>
+        <tr><td>父类名称:</td><td><input id="categoryTree1" value="--请选择--"  style="width:160px;" /></td></tr>
+        <tr><td colspan="2" align="center"><a id="btnEditCategory" href="#" onclick="editCategory();" class="easyui-linkbutton">提交</a></td></tr>
+    </table>
+</div>

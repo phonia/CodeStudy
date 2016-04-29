@@ -1,0 +1,2 @@
+数据库为sql2005，先附加数据库，然后配置连接就行了。
+如果要自己生成数据库得自个手动调用JXCProject.Repositories.CreateDatabaseFromModels.CreateDatabase()，但那样里面就没种子数据了。

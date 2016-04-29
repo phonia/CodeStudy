@@ -1,0 +1,186 @@
+﻿@model JXCProject.Services.DTOs.ProductDTO
+
+@{
+    ViewBag.Title = "品种管理";
+}
+<script type="text/javascript">
+    $(function () {
+        CreateAddDialog();
+        CreateEditDialog();
+        $('#categoryTree').combotree({
+            url: '@Url.Action("CreateCategoryTree","ProductCategory")',
+            onSelect: function (record) {
+                //加载品种列表数据
+                $('#productList').combobox('setValue', '--请选择--');
+                $('#productList').combobox('reload', '/Product/LoadProducts?categoryId=' + record.id + '');
+            }
+        });
+        //初始化品种列表
+        $('#productList').combobox({
+            valueField: 'ID',
+            textField: 'Name'
+        });
+
+        $('#tbProductDate').datebox({
+            formatter: common.getDate
+        });
+        $('#etbProductDate').datebox({
+            formatter: common.getDate
+        });
+        $('#tbProductDate').datebox('setValue', common.getDate(new Date()));
+        $('#etbProductDate').datebox('setValue', common.getDate(new Date()));
+
+        $('#btnSearch').click(function () {
+            $('#productGrid').datagrid({
+                title: '品种信息',
+                width: 1000,
+                url: '@Url.Action("GetPageData")',
+                collapsible: true,
+                pagination: true,
+                queryParams: {
+                    categoryId: $('#categoryTree').combotree('getValue'),
+                    productId: $('#productList').combobox('getValue'),
+                    productName: tbSName.value,
+                    simpleName: tbSName.value
+                },
+                columns: [[
+            { field: 'ck', checkbox: true },
+            { field: 'ID', title: 'ID', hidden: true },
+            { field: 'ProductCategoryId', hidden: true },
+            { field: 'Name', width: 150, title: '品种名称', sortable: true },
+            { field: 'TradePrice', width: 100, title: '采购价', sortable: true },
+            { field: 'RetailPrice', width: 100, title: '零售价', sortable: true },
+            { field: 'Specification', width: 150, title: '规格', sortable: true },
+            { field: 'Unit', width: 60, title: '单位', sortable: true },
+            { field: 'ProductDate', width: 100, title: '生产日期', sortable: true },
+            { field: 'Producer', width: 230, title: '生产厂家', sortable: true }
+            ]],
+                toolbar: [
+            { id: 'btnRemove', text: '删除品种', iconCls: 'icon-remove', handler: function () {
+                deleteProduct();
+            }
+            },
+            { id: 'btnEdit', text: '修改品种', iconCls: 'icon-edit', handler: function () {
+                var row = $('#productGrid').datagrid('getSelected');
+                if (row) {
+                    $('#editProduct').dialog('open');
+
+                    $('#tableEdit').find('#ProductCategoryId').combotree('setValue', row.ProductCategoryId);
+                    $('#tableEdit').find('#ProductDate').datebox('setValue', common.getDate(new Date()));
+                    //为文本框赋值
+                    $('#tableEdit').find('#Name').val(row.Name);
+                    $('#tableEdit').find('#SimpleName').val(row.SimpleName);
+                    $('#tableEdit').find('#Unit').val(row.Unit);
+                    $('#tableEdit').find('#TradePrice').val(row.TradePrice);
+                    $('#tableEdit').find('#RetailPrice').val(row.RetailPrice);
+                    $('#tableEdit').find('#Specification').val(row.Specification);
+                    $('#tableEdit').find('#Producer').val(row.Producer);
+                }
+                else {
+                    $.messager.alert('消息', '请选择要编辑的行!', 'warning')
+                }
+            }
+            }
+            ]
+            })
+        })
+    });
+
+    function ShowAddDialog() {
+        $('#addProduct').dialog('open');
+    }
+
+    function CreateAddDialog() {
+        $('#addProduct').dialog({
+            title: '新增品种',
+            closed: true,
+            iconCls: 'icon-add',
+            buttons: [{
+                id: 'btnAdd',
+                text: '提交',
+                iconCls: 'icon-ok',
+                handler: function () {
+                    addProduct();
+                }
+            }, {
+                text: '关闭',
+                iconCls: 'icon-cancel',
+                handler: function () {
+                    $('#addProduct').dialog({ closed: true });
+                }
+            }]
+        });
+    }
+
+    function CreateEditDialog() {
+        $('#editProduct').dialog({
+            title: '修改品种',
+            closed: true,
+            iconCls: 'icon-edit',
+            buttons: [{
+                id: 'btnEdit',
+                text: '提交',
+                iconCls: 'icon-ok',
+                handler: function () {
+                    editProduct();
+                }
+            }, {
+                text: '关闭',
+                iconCls: 'icon-cancel',
+                handler: function () {
+                    $('#editProduct').dialog({ closed: true });
+                }
+            }]
+        });
+    }
+
+    function loadProducts(categoryId) {
+        $('#productList').combobox({
+            url: '/Product/LoadProducts?categoryId=' + categoryId + '',
+            valueField: 'ID',
+            textField: 'Name'
+        })
+    }
+
+    function deleteProduct() {
+        var rows = $('#productGrid').datagrid('getSelections');
+        if (rows.length == 0) {
+            $.messager.alert("消息", "请选择要删除的数据!", 'warning');
+        }
+        else {
+            for (var i = 0; i < rows.length; i++) {
+                var index = $('#productGrid').datagrid('getRowIndex', rows[i]);
+                var product = { ID: rows[i].ID };
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("RemoveProduct")',
+                    data: product
+                });
+                $('#productGrid').datagrid('deleteRow', index);
+            }
+            $.messager.alert("消息", "已成功删除" + rows.length + "条数据!");
+        }
+    }
+    
+    </script>
+
+<table width="100%">
+    <tr><td colspan="6" align="center" style="font-size:large;">品种管理</td></tr>
+    <tr><td colspan="6" align="right"><a href="#" class="easyui-linkbutton" onclick="ShowAddDialog();">新增品种</a></td></tr>
+    <tr>
+        <td>品种分类:</td><td><input id="categoryTree" value="--请选择--"  style="width:160px;" /></td>
+        <td>品种名称:</td><td><input id="productList" style="width:160px;" /></td>
+        <td>品种简码:</td><td><input id="tbSName"  type="text"/></td>
+    </tr>
+    <tr><td colspan="6" align="center"><a href="#" id="btnSearch" class="easyui-linkbutton" iconCls="icon-search">查询</a></td></tr>
+    <tr><td colspan="6" ><table id="productGrid"></table></td></tr>
+</table>
+
+<div id="addProduct" class="tabletd" title="新增品种" style="height:260px;width:650px;">
+@Html.Action("AddProduct")
+</div>
+
+<div id="editProduct" class="tabletd" title="修改品种" style=" height:250px; width:650px;" >
+@Html.Action("ModifyProduct")
+</div>
+

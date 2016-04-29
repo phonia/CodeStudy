@@ -1,0 +1,130 @@
+﻿@model JXCProject.Services.DTOs.DepartmentDTO
+
+@{
+    ViewBag.Title = "部门管理";
+}
+
+<script type="text/javascript">
+    $(function () {
+        $('#addDepartment').dialog({ closed: true });
+        $('#editDepartment').dialog({ closed: true });
+
+        $('#grid').datagrid({
+            title: '品种分类',
+            width: 1000,
+            url: '@Url.Action("GetPageData")',
+            collapsible: true,
+            pagination: true,
+            columns: [[
+            { field: 'ck', checkbox: true },
+            { field: 'ID', title: 'ID', hidden: true },
+            { field: 'Name', width: 475, title: '部门名称', sortable: true },
+            { field: 'ParentName', width: 472, title: '父级部门', sortable: true }
+            ]],
+            toolbar: [
+            { id: 'btnRemove', text: '删除分类', iconCls: 'icon-remove', handler: function () {
+                deleteDepartment();
+            }
+            },
+            { id: 'btnEdit', text: '修改分类', iconCls: 'icon-edit', handler: function () {
+                showEditDialog();
+            }
+            }
+            ],
+            onDblClickRow: function () {
+                showEditDialog();
+            }
+        })
+    });
+
+    function showAddDialog() {
+        $('#addDepartment').dialog('open');
+        $('#departmentTree').combotree({
+            url: '@Url.Action("CreateDepartmentTree")',
+            lines:true
+        });
+    }
+
+    function showEditDialog() {
+        var row = $('#grid').datagrid('getSelected');
+        if (row) {
+            $('#editDepartment').dialog('open');
+            $('#departmentTree1').combotree({
+                url: '@Url.Action("CreateDepartmentTree")',
+                lines:true
+            });
+            oldDepartmentName.value = row.Name;
+        }
+        else {
+            $.messager.alert('消息', '请选择要编辑的行!', 'warning')
+        }
+    }
+
+    function addDepartment() {
+        var dept = {};
+        dept.Name = departmentName.value;
+        dept.ParentID = $('#departmentTree').combotree('getValue');
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("AddDepartment")',
+            data: dept,
+            success: function () {
+                $('#departmentTree').combotree('reload');
+                $.messager.alert("消息", "操作成功!");
+                $('#grid').datagrid('reload');
+            }
+        });
+    }
+
+    function deleteDepartment() {
+        common.deleteData('grid', '/Department/RemoveDepartment');
+    }
+
+    function editDepartment() {
+        var row = $('#grid').datagrid('getSelected');
+        if (row) {
+            var data =
+            {   ParentID: $('#departmentTree1').combotree('getValue'),
+                ID: row.ID,
+                Name:row.Name
+            };
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("ModifyDepartment")',
+                data: data,
+                success: function () {
+                    $('#editDepartment').dialog({ closed: true });
+                    //刷新修改的行
+                    var index = $('#grid').datagrid('getRowIndex', row);
+                    $('#grid').datagrid('updateRow', { index: index, row: { ParentName: $('#departmentTree1').combotree('getText')} });
+                    $.messager.alert("消息", "操作成功!");
+                }
+            });
+        }
+    }
+    
+    
+    </script>
+
+<table width="100%">
+    <tr><td  align="center" style="font-size:large;">部门管理</td></tr>
+    <tr><td align="right"><a href="#" id="btnAdd" onclick="showAddDialog();" class="easyui-linkbutton">新增部门</a></td></tr>
+    <tr><td><table id="grid"></table></td></tr>
+</table>
+<div id="addDepartment" class="tabletd" title="新增部门" style="height:170px;width:270px;">
+    <table  width="100%">
+        <tr><td align="center" colspan="2"></td></tr>
+        <tr><td>部门名称:</td><td>@Html.TextBox("departmentName")</td></tr>
+        <tr><td>父级部门:</td><td><input id="departmentTree" value="--请选择--"  style="width:155px;" /></td></tr>
+        <tr><td colspan="2" align="center"><a id="btnAddDepartment" onclick="addDepartment();" href="#" class="easyui-linkbutton">提交</a></td></tr>
+    </table>
+</div>
+<div id="editDepartment" class="tabletd" title="修改部门" style=" height:170px; width:270px;" >
+    <table width="100%">
+        <tr><td align="center" colspan="2"></td></tr>
+        <tr><td>部门名称:</td><td><input type="text" id="oldDepartmentName" disabled="disabled"/></td></tr>
+        <tr><td>父级部门:</td><td><input id="departmentTree1" value="--请选择--"  style="width:155px;" /></td></tr>
+        <tr><td colspan="2" align="center"><a id="btnEditDepartment" href="#" onclick="editDepartment();" class="easyui-linkbutton">提交</a></td></tr>
+    </table>
+</div>
+

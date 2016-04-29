@@ -1,0 +1,161 @@
+﻿@{
+    ViewBag.Title = "客户管理";
+}
+<script src="../../Scripts/jquery-easyui-1.3.5/datagrid-detailview.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+    $(function () {
+        $('#btnSearch').click(function () {
+            $('#grid').datagrid({
+                title: '客户信息',
+                width: 1000,
+                url: '@Url.Action("GetPageData")',
+                collapsible: true,
+                pagination: true,
+                view: detailview,
+                detailFormatter: function (index, row) {
+                    return '<div style="padding:2px"><table id="ddv"></table></div>';
+                },
+                queryParams: {
+                    cstType: $('#ct').combotree('getValue'),
+                    cstName: $('#searchName').val()
+                },
+                columns: [[
+            { field: 'ck', checkbox: true },
+            { field: 'ID', title: 'ID', hidden: true },
+            { field: 'Name', title: '名称', sortable: true },
+            { field: 'CstType', title: '客户类型', sortable: true },
+            { field: 'Telephone', title: '电话', sortable: true },
+            { field: 'Zip', title: '邮编', sortable: true },
+            { field: 'Address', title: '地址', width: 445, sortable: true }
+            ]],
+                toolbar: [
+            { id: 'btnRemove', text: '删除客户', iconCls: 'icon-remove', handler: function () {
+                deleteCustomer();
+            }
+            },
+            { id: 'btnEdit', text: '修改客户', iconCls: 'icon-edit', handler: function () {
+                showEditDialog();
+            }
+            }
+            ],
+                onExpandRow: function (index, row) {
+                    var ddv = $(this).datagrid('getRowDetail', index).find('#ddv');
+                    ddv.datagrid({
+                        url: '@Url.Action("GetCustomerAddress")',
+                        queryParams: { cstId: row.ID },
+                        fitColumns: true,
+                        singleSelect: true,
+                        height:'auto',
+                        rownumbers: true,
+                        loadMsg: '正在加载客户地址......',
+                        columns: [[
+                            { field: 'Reciever', title: '收货人', width: 80 },
+                            { field: 'Telephone', title: '电话', width: 100 },
+                            { field: 'ZipCode', title: '邮编', width: 80 },
+                            { field: 'Address', title: '地址', width: 250 }
+                        ]],
+                        onResize: function () {
+                            $('#grid').datagrid('fixDetailRowHeight', index);
+                        },
+                        onLoadSuccess: function () {
+                            setTimeout(function () {
+                                $('#grid').datagrid('fixDetailRowHeight', index);
+                            }, 0);
+                        }
+                    })
+                    $('#grid').datagrid('fixDetailRowHeight', index);
+                }
+            })
+        });
+    });
+
+    function showAddDialog() {
+        $('<div class="tabletd"/>').dialog({
+            id: 'addDialog',
+            height: 375,
+            width: 615,
+            modal: true,
+            cache: false,
+            title: '新增客户',
+            href: '/Customer/AddCustomer',
+            iconCls: 'icon-add',
+            buttons: [{
+                id: 'btnAdd',
+                text: '提交',
+                iconCls: 'icon-ok',
+                handler: function () {
+                    addCustomer();
+                }
+            }, {
+                text: '关闭',
+                iconCls: 'icon-cancel',
+                handler: function () {
+                    $(this).closest(".window-body").dialog("destroy");
+                }
+            }],
+            onClose: function () {
+                $(this).dialog('destroy');
+            }
+        });
+    }
+
+    function showEditDialog() {
+        var row = $('#grid').datagrid('getSelected');
+        if (row) {
+            $('<div class="tabletd"/>').dialog({
+                id: 'editDialog',
+                height: 375,
+                width: 615,
+                modal: true,
+                cache: false,
+                title: '修改客户',
+                href: '/Customer/ModifyCustomer',
+                iconCls: 'icon-edit',
+                buttons: [{
+                    id: 'btnEdit',
+                    text: '提交',
+                    iconCls: 'icon-ok',
+                    handler: function () {
+                        editCustomer();
+                    }
+                }, {
+                    text: '关闭',
+                    iconCls: 'icon-cancel',
+                    handler: function () {
+                        $(this).closest(".window-body").dialog("destroy");
+                    }
+                }],
+                onClose: function () {
+                    $(this).dialog('destroy');
+                }
+            });
+        }
+        else {
+            $.messager.alert('消息', '请选择要编辑的行!', 'warning');
+        }
+    }
+
+    function deleteCustomer() {
+        common.deleteData('grid', '/Customer/RemoveCustomer');
+    }
+
+    function onSuccess() {
+        $.messager.alert("消息", "操作成功!");
+    }
+    
+</script>
+
+<table width="100%">
+    <tr><td colspan="4" align="center" style="font-size:large;">客户管理</td></tr>
+    <tr><td colspan="4" align="right"><a href="#" class="easyui-linkbutton" onclick="showAddDialog();">新增客户</a></td></tr>
+    <tr>
+        <td>客户类型:</td>
+        <td><select id="ct" name="ct" class="easyui-combobox" panelHeight="75"><option>--请选择--</option><option value="采购客户">采购客户</option><option value="销售客户">销售客户</option></select></td>
+        <td>客户名称:</td><td>@Html.TextBox("searchName")</td>
+    </tr>
+    <tr><td colspan="4" align="center"><a href="#" id="btnSearch" class="easyui-linkbutton" iconCls="icon-search">查询</a></td></tr>
+    <tr><td colspan="4" ><table id="grid"></table></td></tr>
+</table>
+
