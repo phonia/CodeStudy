@@ -116,11 +116,12 @@ namespace UnityTest
                 unityContainer.RegisterType<IInjectConstructInterface, ObjectInheritFromConstructorInterface>(
                         new InjectionConstructor("hy","polan")
                     );
-                Assert.IsTrue(((ObjectInheritFromConstructorInterface)unityContainer.Resolve<IInjectConstructInterface>()).UserName.Equals("hy"));
+                var one=unityContainer.Resolve<IInjectConstructInterface>();
+                Assert.IsTrue((one as ObjectInheritFromConstructorInterface).UserName.Equals("hy"));
                 unityContainer.RegisterType<ObjectInheritFromConstructorInterface>(
                     "Instance", new InjectionConstructor("hy", "polan")
                     );
-                Assert.IsTrue(((ObjectInheritFromConstructorInterface)unityContainer.Resolve<ObjectInheritFromConstructorInterface>("Instacne")).UserName.Equals("hy"));
+                Assert.IsTrue(((ObjectInheritFromConstructorInterface)unityContainer.Resolve<ObjectInheritFromConstructorInterface>("Instance")).UserName.Equals("hy"));
             }
         }
 
@@ -147,8 +148,92 @@ namespace UnityTest
                 var obj = unityContainer.Resolve<ObjectWithInjectionMehtod>();
                 Assert.IsTrue(unityContainer.Resolve<ObjectWithInjectionMehtod>().UserName.Equals("hy"));
                 obj.SetName("polan");
-                Assert.IsTrue(unityContainer.Resolve<ObjectWithInjectionMehtod>().UserName.Equals("polan"));
+                Assert.IsTrue(obj.UserName.Equals("polan"));
             }
+        }
+        
+        
+        [TestMethod]
+        public void CanConfigureContainerToInjectSpecificValuesIntoAnArray()
+        {
+            ILogger logger2 = new SpecialLogger();
+
+            IUnityContainer container = new UnityContainer()
+                .RegisterType<TypeWithArrayConstructorParameter>(
+                new InjectionConstructor(
+                    new ResolvedArrayParameter<ILogger>(
+                        new ResolvedParameter<ILogger>("log1"),
+                        typeof (ILogger),
+                        logger2)))
+                .RegisterType<ILogger, SpecialLogger>()
+                .RegisterType<ILogger, SpecialLogger>("log1");
+
+            TypeWithArrayConstructorParameter result = container.Resolve<TypeWithArrayConstructorParameter>();
+
+            Assert.AreEqual(3, result.loggers.Length);
+            Assert.IsInstanceOfType(result.loggers[0], typeof (SpecialLogger));
+            Assert.IsInstanceOfType(result.loggers[1], typeof (SpecialLogger));
+            Assert.AreSame(logger2, result.loggers[2]);
+        }
+
+        [TestMethod]
+        public void ContainerAutomaticallyResolvesAllWhenInjectingArrays()
+        {
+            ILogger[] expected = new ILogger[] { new SpecialLogger(), new SpecialLogger() };
+            IUnityContainer container = new UnityContainer()
+                .RegisterInstance("one", expected[0])
+                .RegisterInstance("two", expected[1]);
+
+            TypeWithArrayConstructorParameter result = container.Resolve<TypeWithArrayConstructorParameter>();
+
+            CollectionAssert.AreEqual(expected, result.loggers);
+        }
+
+        [TestMethod]
+        public void CanConfigureContainerToCallConstructorWithArrayParameterWithNonGenericVersion()
+        {
+            ILogger o1 = new SpecialLogger();
+            ILogger o2 = new SpecialLogger();
+
+            IUnityContainer container = new UnityContainer()
+                .RegisterType<TypeWithArrayConstructorParameter>(
+                new InjectionConstructor(typeof(ILogger[])))
+                .RegisterInstance<ILogger>("o1", o1)
+                .RegisterInstance<ILogger>("o2", o2);
+
+            TypeWithArrayConstructorParameter resolved = container.Resolve<TypeWithArrayConstructorParameter>();
+
+            Assert.IsNotNull(resolved.loggers);
+            Assert.AreEqual(2, resolved.loggers.Length);
+            Assert.AreSame(o1, resolved.loggers[0]);
+            Assert.AreSame(o2, resolved.loggers[1]);
+        }
+
+        //InjectionParameterr用于注册非Container参数 与 ResolvedParameter相对
+        [TestMethod]
+        public void CanCallNonGenericConstructorOnOpenGenericType()
+        {
+            IUnityContainer container = new UnityContainer()
+                .RegisterType(typeof(ClassWithOneGenericParameter<>),
+                        new InjectionConstructor("Fiddle", new InjectionParameter<object>("someValue")));
+
+            ClassWithOneGenericParameter<User> result = container.Resolve<ClassWithOneGenericParameter<User>>();
+
+            Assert.IsNull(result.InjectedValue);
+        }
+
+        //不是很明白 大概是为Interceptor做准备的
+        [TestMethod]
+        public void CanGetConfigurationInterfaceFromExtension()
+        {
+            MockContainerExtension extension = new MockContainerExtension();
+            IUnityContainer container = new UnityContainer()
+                .AddExtension(extension);
+
+            IMockConfiguration config = container.Configure<IMockConfiguration>();
+
+            Assert.AreSame(extension, config);
+            Assert.AreSame(container, config.Container);
         }
     }
 }

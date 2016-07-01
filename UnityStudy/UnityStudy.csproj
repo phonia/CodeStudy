@@ -59,14 +59,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClassWithOneGenericParameter.cs" />
     <Compile Include="IInjectConstructInterface.cs" />
     <Compile Include="IInjectPropertyInterface.cs" />
+    <Compile Include="ILogger.cs" />
     <Compile Include="IService.cs" />
+    <Compile Include="MockContainerExtension.cs" />
     <Compile Include="ObjectInheritFromConstructorInterface.cs" />
     <Compile Include="ObjectInheritFromInjectPropertyInterface.cs" />
     <Compile Include="ObjectInheritFromIService.cs" />
     <Compile Include="ObjectWithInjectionMehtod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SpecialLogger.cs" />
+    <Compile Include="TypeWithArrayConstructorParameter.cs" />
+    <Compile Include="User.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
