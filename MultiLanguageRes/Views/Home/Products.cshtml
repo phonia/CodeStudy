@@ -1,0 +1,9 @@
+﻿@model MultiLanguageRes.Models.Product
+
+@{
+    ViewBag.Title = "Products";
+}
+
+<h2>Products</h2>
+@Html.ValidationMessageFor(m=>m.Name)
+@Html.TextBoxFor(m=>m.Name)
