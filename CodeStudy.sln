@@ -133,6 +133,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiLanguageRes", "MultiLa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiLanguageRes.Tests", "MultiLanguageRes.Tests\MultiLanguageRes.Tests.csproj", "{5A668FC3-92E3-444B-AFD2-ABCBB7679EFD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WCF", "WCF", "{B9A485CF-2375-4BE4-B79F-EA7AF0BC0A27}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FirstWcfService", "FirstWcfService\FirstWcfService.csproj", "{25A48516-AE50-43C1-B645-754ECD4D1E39}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -343,6 +347,10 @@ Global
 		{5A668FC3-92E3-444B-AFD2-ABCBB7679EFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5A668FC3-92E3-444B-AFD2-ABCBB7679EFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5A668FC3-92E3-444B-AFD2-ABCBB7679EFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25A48516-AE50-43C1-B645-754ECD4D1E39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25A48516-AE50-43C1-B645-754ECD4D1E39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25A48516-AE50-43C1-B645-754ECD4D1E39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25A48516-AE50-43C1-B645-754ECD4D1E39}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -397,6 +405,7 @@ Global
 		{522279CC-F3F1-4BA2-B44D-EC1615E3145D} = {5B4EEDAF-C0D5-42BA-8D4B-7D66718BD381}
 		{D22A1BC7-BE6E-4AA2-9845-84B2E8D606C5} = {5B4EEDAF-C0D5-42BA-8D4B-7D66718BD381}
 		{7ACA95D8-FFFC-498C-9E7E-A932AEA72DE1} = {5B4EEDAF-C0D5-42BA-8D4B-7D66718BD381}
+		{25A48516-AE50-43C1-B645-754ECD4D1E39} = {B9A485CF-2375-4BE4-B79F-EA7AF0BC0A27}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.2.1.505.0\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35
