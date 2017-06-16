@@ -35,9 +35,10 @@ namespace MultiLanguageRes.Controllers
         {
             try
             {
-                CultureInfo.CurrentCulture.Name=
-                var pp = new Product();
-                return View(pp);
+                //CultureInfo.CurrentCulture.Name=
+                //var pp = new Product();
+                //return View(pp);
+                return View();
             }
             catch (Exception ex)
             {
